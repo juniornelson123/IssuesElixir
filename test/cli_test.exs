@@ -2,7 +2,7 @@ defmodule CliTest do
   use ExUnit.Case
   doctest Issues
 
-  import Issues.CLI, only: [parse_args: 1, run: 1]
+  import Issues.CLI, only: [parse_args: 1, sort_in_desc_order: 1]
 
   test "help returned if parsed --help or -h" do
     assert parse_args(["--help", "Anything"]) == :help
@@ -17,7 +17,13 @@ defmodule CliTest do
     assert parse_args(["user", "project"]) == {"user", "project", 4}
   end
 
-  # test "return string help if parsed parameter :help" do
-    # assert run(["-h"]) == "usage: issues <user> <project> [ count | 4 ]"
-  # end
+  test "sort descending orders the current way" do
+    result = sort_in_desc_order(create_fake_list(["a","c", "b"]))
+    issues = for issue <- result, do: Map.get(issue, "created_at")
+    assert issues == ~w{ c b a}
+  end
+
+  defp create_fake_list(values) do
+    for value <- values, do: %{"created_at" => value, "other_date" => "xxx" }
+  end
 end
